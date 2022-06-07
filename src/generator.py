@@ -1,3 +1,4 @@
+from pickletools import optimize
 from PIL import Image, ImageDraw, ImageFont, ImageSequence
 import textwrap
 
@@ -14,6 +15,7 @@ def generate_text(text, gifsize):
 
 
 def generate_image(text):
+    print("Generating gif...")
     gifsrc = Image.open("ressources/buzz-lightyear-factory.gif")
     textimg = generate_text(text, gifsrc.size)
 
@@ -22,5 +24,6 @@ def generate_image(text):
         rendered_frame = Image.new('RGB', (gifsrc.width, gifsrc.height + textimg.height))
         rendered_frame.paste(textimg, (0, 0))
         rendered_frame.paste(frame, (0, textimg.height))
-        output_array.append(rendered_frame)
-    output_array[0].save("output/output.gif", save_all=True, append_images=output_array, loop=0)
+        output_array.append(rendered_frame.resize((300,300), Image.ANTIALIAS))
+    output_array[0].save("output/output.gif", save_all=True, append_images=output_array[1:], loop=0, optimize=True)
+    print("Gif generated. Find the output in the output directory")
