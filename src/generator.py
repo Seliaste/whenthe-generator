@@ -1,4 +1,4 @@
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageSequence
 import textwrap
 
 
@@ -14,11 +14,13 @@ def generate_text(text, gifsize):
 
 
 def generate_image(text):
-    gifsrc = Image.open("ressources/buzz-lightyear-factory.gif").convert("RGB")
-
+    gifsrc = Image.open("ressources/buzz-lightyear-factory.gif")
     textimg = generate_text(text, gifsrc.size)
 
-    output = Image.new('RGB', (gifsrc.width, gifsrc.height + textimg.height))
-    output.paste(textimg, (0, 0))
-    output.paste(gifsrc, (0, textimg.height))
-    output.show()
+    output_array = []
+    for frame in ImageSequence.Iterator(gifsrc):
+        rendered_frame = Image.new('RGB', (gifsrc.width, gifsrc.height + textimg.height))
+        rendered_frame.paste(textimg, (0, 0))
+        rendered_frame.paste(frame, (0, textimg.height))
+        output_array.append(rendered_frame)
+    output_array[0].save("output/output.gif", save_all=True, append_images=output_array, loop=0)
